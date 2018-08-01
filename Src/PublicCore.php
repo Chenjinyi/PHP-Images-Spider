@@ -29,25 +29,38 @@ class PublicCore
         return $result;
     }
 
+
+    /**
+     * 文件夹名
+     * @param $string
+     * @return string
+     */
+    public function new_dir_name($string)
+    {
+        $path = FILE_PATH . DIRECTORY_SEPARATOR . date(DATE_FORMAT) . "-" . $string;
+        $this->dir_create($path);
+        return $path;
+    }
+
     /**
      * 下载图片（单线程）多线程版容易请求太频繁
-     * @param $file_url array 下载链接-文件名
+     * @param $file_url array array[文件名=下载链接]
      * @param $dir_name string 保存的文件夹
      */
     public function image_save($file_url, $dir_name)
     { //下载
-        foreach ($file_url as $url) {
-            $image_name = array_keys($file_url);
-            $url = "http://" . $url;
-
-            if (file_exists($dir_name . DIRECTORY_SEPARATOR . $image_name)) {//检测是否存在
-                echo "已存在" . PHP_EOL;
-                continue;
-            } else {
-                if ($image_save = file_get_contents($url)) {
-                    @file_put_contents($dir_name . DIRECTORY_SEPARATOR . $image_name, $image_save);
+        foreach ($file_url as $images) {
+            foreach ($images as $key => $value) {
+                print_r($key.PHP_EOL);
+                if (file_exists($dir_name . DIRECTORY_SEPARATOR . $key)) {//检测是否存在
+                    echo "已存在" . PHP_EOL;
+                    continue;
                 } else {
-                    print_r("下载错误：" . $url);
+                    if ($image_save = file_get_contents($value)) {
+                        @file_put_contents($dir_name . DIRECTORY_SEPARATOR . $key, $image_save);
+                    } else {
+                        print_r("下载错误：" . $value);
+                    }
                 }
             }
         }
@@ -69,11 +82,13 @@ class PublicCore
      * @param $string
      * @return string
      */
-    public function user_input($string)
+    public function user_input($string, $default)
     {
         print_r($string);
         $input = trim(fgets(STDIN));
+        if (empty($input)) return $default;
         return $input;
+
     }
 
     /**
@@ -130,7 +145,7 @@ class PublicCore
      */
     public function eol($string)
     {
-        return PHP_EOL.$string.PHP_EOL;
+        return PHP_EOL . $string . PHP_EOL;
     }
 
     /**
@@ -138,7 +153,8 @@ class PublicCore
      * @param $dir
      * @return int
      */
-    public function images_number($dir){
+    public function images_number($dir)
+    {
         return count($this->print_dir($dir));
 
     }

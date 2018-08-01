@@ -26,7 +26,7 @@ $print = "
     "Chenjinyi:https://github.com/Chenjinyi
 =============================
 " . PHP_EOL .
-    "请输入你选择的爬虫:";
+    "请输入你选择的爬虫: ";
 print_r($print);
 $input = trim(fgets(STDIN));
 
