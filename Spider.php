@@ -5,27 +5,14 @@
  * Date: 2018/7/31
  * Time: 下午9:01
  */
-
-require_once "src/PublicCore.php";
+//引用文件
 require_once "Config.php";
+require_once "Src/DbCore.php";
+require_once "Src/PublicCore.php";
 
 //遍历目录文件
-function print_dir($dir_path)
-{
-    $files = array();
-    if (@$handle = opendir($dir_path)) { //注意这里要加一个@，不然会有warning错误提示：）
-        while (($file = readdir($handle)) !== false) {
-            if ($file != ".." && $file != ".") { //排除根目录；
-                $files[] = $file;
-            }
-        }
-        closedir($handle);
-        return $files;
-    }
-}
-
-$dir = print_dir('src' . DIRECTORY_SEPARATOR . 'spider');
-
+$spiderCore = new PublicCore();
+$dir = $spiderCore->print_dir('Src' . DIRECTORY_SEPARATOR . 'Spider');
 
 //输出可以选择的爬虫
 $spider = "";
@@ -34,17 +21,21 @@ foreach ($dir as $key => $value) {
 }
 $print = "
 =============================
-PHP Images Spider".
-PHP_EOL
-. $spider .
-PHP_EOL.
-"Chenjinyi:https://github.com/Chenjinyi
+    PHP Images Spider"
+    . $spiderCore->eol($spider).
+    "Chenjinyi:https://github.com/Chenjinyi
 =============================
-" . PHP_EOL . "请输入你选择的爬虫:";
+" . PHP_EOL .
+    "请输入你选择的爬虫:";
 print_r($print);
 $input = trim(fgets(STDIN));
 
+$t1 = microtime(true);//记录运行时间
 
 //使用爬虫
-$spider_path = 'src' . DIRECTORY_SEPARATOR . 'spider/';
-empty($dir[$input]) ? die('参数错误') : include_once $spider_path . $dir[$input];
+$spider_path = 'Src' . DIRECTORY_SEPARATOR . 'Spider/';
+empty($dir[$input]) ? die(PHP_EOL . '参数错误') : include_once $spider_path . $dir[$input];
+
+$t2 = microtime(true);//记录运行结束时间
+
+print_r(PHP_EOL . '耗时' . round($t2 - $t1, 3) . "秒");//输入运行时间

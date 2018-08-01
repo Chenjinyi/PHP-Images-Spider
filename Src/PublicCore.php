@@ -14,7 +14,7 @@ class PublicCore
      * @param $url string 请求URL
      * @return mixed 返回获取信息
      */
-    public function curl_get($url,$user_agent)
+    public function curl_get($url, $user_agent)
     {
         $ch = curl_init();  //初始化一个cURL会话
         curl_setopt($ch, CURLOPT_URL, $url);//设置需要获取的 URL 地址
@@ -52,6 +52,7 @@ class PublicCore
             }
         }
     }
+
     /**
      * 创建文件夹
      * @param $dir_name string 文件夹名
@@ -110,14 +111,35 @@ class PublicCore
      */
     public function check_api_file($filename)
     {
-        $file_path=API_PATH.DIRECTORY_SEPARATOR.$filename;
-        if (!file_exists($file_path)){
+        $file_path = API_PATH . DIRECTORY_SEPARATOR . $filename;
+        if (!file_exists($file_path)) {
             touch($file_path);
         }
-        $file=file_get_contents($file_path);
-        if (!empty($file)){
+        $file = file_get_contents($file_path);
+        if (!empty($file)) {
             return $file;
         }
         return false;
+    }
+
+
+    /**
+     * 换行（没什么用的function）
+     * @param $string
+     * @return string
+     */
+    public function eol($string)
+    {
+        return PHP_EOL.$string.PHP_EOL;
+    }
+
+    /**
+     * 获取文件夹内拥有多少个文件
+     * @param $dir
+     * @return int
+     */
+    public function images_number($dir){
+        return count($this->print_dir($dir));
+
     }
 }

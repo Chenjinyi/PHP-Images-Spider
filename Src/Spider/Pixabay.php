@@ -6,7 +6,7 @@
  * Time: 下午1:10
  */
 
-class PixabayCore
+class Pixabay
 {
 
 }
@@ -21,7 +21,6 @@ $user_agent=array(
     "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
 );
 //获取数据
-$spiderCore = new PublicCore();
 $spiderCore->init_dir();
 $key = $spiderCore->check_api_file('PixabayApiKey') ?: die("PixabayKey为空");
 $q = $spiderCore->user_input("请输入一个需要查询的字符串");
