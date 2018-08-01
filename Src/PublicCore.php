@@ -86,7 +86,11 @@ class PublicCore
     {
         print_r($string);
         $input = trim(fgets(STDIN));
-        if (empty($input)) return $default;
+        if (empty($input)) {
+            print_r($default.PHP_EOL);
+            return $default;
+        }
+        print_r($input.PHP_EOL);
         return $input;
 
     }
