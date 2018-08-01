@@ -6,7 +6,6 @@
  * Time: 下午8:39
  */
 
-require_once "../Config.php";
 
 class PublicCore
 {
@@ -15,19 +14,11 @@ class PublicCore
      * @param $url string 请求URL
      * @return mixed 返回获取信息
      */
-    public function curl_get($url)
+    public function curl_get($url,$user_agent)
     {
         $ch = curl_init();  //初始化一个cURL会话
         curl_setopt($ch, CURLOPT_URL, $url);//设置需要获取的 URL 地址
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Host:pixabay.com",
-            "Connection: keep-alive",
-            "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-            "Upgrade-Insecure-Requests: 1",
-            "DNT:1",
-            "Accept-Language:zh-CN,zh;q=0.8",
-            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
-        )); // 设置浏览器的特定header
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $user_agent); // 设置浏览器的特定header
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);//不返回数据
 
@@ -91,6 +82,25 @@ class PublicCore
     {
         $this->dir_create(API_PATH);
         $this->dir_create(FILE_PATH);
+    }
+
+    /**
+     * 输出目录
+     * @param $dir_path
+     * @return array
+     */
+    public function print_dir($dir_path)
+    {
+        $files = array();
+        if (@$handle = opendir($dir_path)) { //注意这里要加一个@，不然会有warning错误提示：）
+            while (($file = readdir($handle)) !== false) {
+                if ($file != ".." && $file != ".") { //排除根目录；
+                    $files[] = $file;
+                }
+            }
+            closedir($handle);
+            return $files;
+        }
     }
 
     /**

@@ -6,6 +6,10 @@
  * Time: 下午9:01
  */
 
+require_once "src/PublicCore.php";
+require_once "Config.php";
+
+//遍历目录文件
 function print_dir($dir_path)
 {
     $files = array();
@@ -19,19 +23,28 @@ function print_dir($dir_path)
         return $files;
     }
 }
-$dir=print_dir('src');
 
-$spider="";
-foreach ($dir as $path ){
+$dir = print_dir('src' . DIRECTORY_SEPARATOR . 'spider');
 
+
+//输出可以选择的爬虫
+$spider = "";
+foreach ($dir as $key => $value) {
+    $spider .= PHP_EOL . $key . " : " . $value . PHP_EOL;
 }
+$print = "
+=============================
+PHP Images Spider".
+PHP_EOL
+. $spider .
+PHP_EOL.
+"Chenjinyi:https://github.com/Chenjinyi
+=============================
+" . PHP_EOL . "请输入你选择的爬虫:";
+print_r($print);
+$input = trim(fgets(STDIN));
 
-$print ="
-=============================
-PHP Images Spider
-"
-    .$spider.
-    "
-Chenjinyi:https://github.com/Chenjinyi
-=============================
-";
+
+//使用爬虫
+$spider_path = 'src' . DIRECTORY_SEPARATOR . 'spider/';
+empty($dir[$input]) ? die('参数错误') : include_once $spider_path . $dir[$input];
