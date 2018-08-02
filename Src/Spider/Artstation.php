@@ -47,6 +47,7 @@ class Artstation
         return $images_arr;
     }
 
+    //https://www.artstation.com/search/projects.json?direction=desc&order=likes_count&page=1&q=ne&show_pro_first=true
     /**
      * 图片爬取下载
      * @param $spiderCore
@@ -62,12 +63,34 @@ class Artstation
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
             $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr);
-            $this->artatstion_sleep();
+            $this->artatstion_sleep();//休息一下
         }
 
     }
 
+    /**
+     * 图片爬取下载
+     * @param $spiderCore
+     * @param $spider_name
+     * @param $parm
+     */
+    public function search_core($spiderCore, $spider_name,$parm)
+    {
+        $posts_num = $spiderCore->user_input("请输入爬取页数(1页=50个作品)(默认为：1):", 1);
+        for ($start_num = 1; $start_num <= $posts_num; $start_num++) {
+            $url = "https://www.artstation.com/search/projects.json?page=" . $start_num.$parm;
+            $result = $spiderCore->curl_get($url, $this->userAgent);
+            $result = json_decode($result);
+            $images_arr = $this->get_img_url($result, $spiderCore);
+            $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr);
+            $this->artatstion_sleep();//休息一下
+        }
 
+    }
+
+    /**
+     * config设置开启时，每执行一次循环休息一下
+     */
     public function artatstion_sleep(){
         if (ARTSTATION_SLEEP){
             print_r(PHP_EOL."爬累了，我要睡觉觉zzzzzzzzzzzzzzz".PHP_EOL);
@@ -113,8 +136,8 @@ class Artstation
         $show_pro_first=$spiderCore->user_input("请输入True/False".PHP_EOL."Pro用户优先?（默认 true）:",true) ;
         $show_pro_first==="false"?$parm .= "&show_pro_first=false":$parm .= "&show_pro_first=true";
         $order=$spiderCore->user_input("最新还是喜欢?(默认 true 喜欢优先) :",true);
-        $order==="false" ? $parm .= "&order=recent":$parm .= "&order=likes_count";
-        $this->index_spider_core($spiderCore,$title,$parm);
+        $order==="false" ? $parm .= "&order=recent":$parm .= "&order=likes_count&direction=desc";
+        $this->search_core($spiderCore,$title,$parm);
     }
 }
 
