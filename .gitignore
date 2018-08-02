@@ -1,4 +1,7 @@
 Api/
+Api/*
 Resource/
+Resource/*
 .DS_Store/
+.DS_Store
 .idea/
