@@ -15,12 +15,8 @@ $spiderCore = new PublicCore();
 $dir = $spiderCore->print_dir('Src' . DIRECTORY_SEPARATOR . 'Spider');
 
 //输出可以选择的爬虫
-$spider = "";
-foreach ($dir as $key => $value) {
-    $spider .= PHP_EOL . $key . " : " . $value . PHP_EOL;
-}
-$dlc =PHP_EOL.
-    "
+$spider = $spiderCore->print_menu($dir);
+$print = "
     \e[33m 
                       _ooOoo_                      
                      o8888888o                     
@@ -41,8 +37,7 @@ $dlc =PHP_EOL.
       ===`-.`___`-.__\ \___  /__.-'_.'_.-'===      
                       `=--=-'                      
                                         
-   \033[0m\ ".PHP_EOL;
-$print = "
+   \e[0m
 ====================================================
     \033[33m PHP Images Spider \033[0m" .
         "\033[34m".$spiderCore->eol($spider)."\033[0m".
@@ -51,7 +46,7 @@ $print = "
 ====================================================
 " . PHP_EOL .
     "请输入你选择的爬虫: ";
-print_r($dlc.$print);
+print_r($print);
 $input = trim(fgets(STDIN));
 
 $t1 = microtime(true);//记录运行时间

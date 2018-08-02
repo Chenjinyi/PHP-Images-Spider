@@ -1,15 +1,12 @@
 <?php
 /**
+ * Copy Chenjinyi/Image-Spider src/bingspider.php
+ * chenjinyi666@gmail.com
  * Created by PhpStorm.
  * User: jinyi
  * Date: 2018/8/1
  * Time: 上午10:12
  */
-
-class Bing
-{
-
-}
 
 $ch = curl_init();curl_setopt($ch,CURLOPT_URL,"http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1");
 curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);//抓取

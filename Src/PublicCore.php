@@ -162,4 +162,42 @@ class PublicCore
         return count($this->print_dir($dir));
 
     }
+
+    /**
+     * 通过URL进行图片格式处理（只能分辨jpg/png）
+     */
+    public function image_url_format($image_url,$file_name){
+        if (strstr($image_url, "jpg")) {
+            $file_name .= ".jpg";
+        } elseif (strstr($image_url, "png")) {
+            $file_name .= ".png";
+        } else {
+            $file_name .= $image_url.".jpeg";//不知道什么格式时的处理方式
+        }
+        return $file_name;
+    }
+
+    /**
+     * 一个下载调用其他函数的封装
+     * @param $string
+     * @param $images_arr
+     */
+    public function quick_down_img($string,$images_arr){
+        $dir_path =$this->new_dir_name($string);//生成保存路径
+        $this->image_save($images_arr,$dir_path);//下载图片
+        print_r("文件夹现在有:".$this->images_number($dir_path)."张图片");
+    }
+
+    /**
+     * 输出菜单
+     * @param array $spider
+     * @return string 菜单
+     */
+    public function print_menu(array $spider){
+        $result="";
+        foreach ($spider as $key=>$value){
+            $result .= PHP_EOL . $key . " : " . $value . PHP_EOL;
+        }
+        return $result;
+    }
 }
