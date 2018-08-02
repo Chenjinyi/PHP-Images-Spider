@@ -19,11 +19,12 @@ class Artstation
     ];//设置用户user-agent
 
     public $mode = [
-        '1'=>'trending',
+        '1' => 'trending',
         'latest',
         'picks',
         'user',
-    ];//可以选择的模式/可以调用的function
+        'search'
+    ];//可以选择的模式 可以调用的function
 
     public $spider_name = "Artstation";
 
@@ -46,16 +47,31 @@ class Artstation
         return $images_arr;
     }
 
-    public function index_spider_core($spiderCore,$spider_name)
+    /**
+     * 图片爬取下载
+     * @param $spiderCore
+     * @param $spider_name
+     * @param $parm
+     */
+    public function index_spider_core($spiderCore, $spider_name,$parm)
     {
-        $posts_num = $spiderCore->user_input("请输入爬取页数(1页=50个作品)/(默认为1):", 1);
+        $posts_num = $spiderCore->user_input("请输入爬取页数(1页=50个作品)(默认为：1):", 1);
         for ($start_num = 1; $start_num <= $posts_num; $start_num++) {
-            $url = "https://www.artstation.com/projects.json?page=" . $start_num . "&sorting=" . $spider_name;
+            $url = "https://www.artstation.com/projects.json?page=" . $start_num.$parm;
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
             $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr);
+            $this->artatstion_sleep();
+        }
 
+    }
+
+
+    public function artatstion_sleep(){
+        if (ARTSTATION_SLEEP){
+            print_r(PHP_EOL."爬累了，我要睡觉觉zzzzzzzzzzzzzzz".PHP_EOL);
+            sleep(ARTSTATION_SLEEP_TIME);
         }
     }
 
@@ -73,28 +89,32 @@ class Artstation
         $spiderCore->quick_down_img($this->spider_name . "-" . $user, $images_arr);
     }
 
-    /**
-     * 最新图片爬取
-     * @param $spiderCore
-     */
-    public function latest($spiderCore)
+    public function latest($spiderCore) //最新图片
     {
-        $this->index_spider_core($spiderCore,'latest');
+        $this->index_spider_core($spiderCore, 'latest','&sorting=latest');
     }
 
-    public function picks($spiderCore)
+    public function picks($spiderCore) //最佳
     {
-        $this->index_spider_core($spiderCore,'picks');
+        $this->index_spider_core($spiderCore, 'picks','&sorting=picks');
     }
 
-    public function trending($spiderCore)
+    public function trending($spiderCore) //最热门
     {
-        $this->index_spider_core($spiderCore,'trending');
+        $this->index_spider_core($spiderCore, 'trending','&sorting=trending');
     }
 
+    //https://www.artstation.com/search/projects.json?direction=desc&order=likes_count&page=1&q=dva&show_pro_first=true
     public function search($spiderCore)
     {
-
+        $parm= "";
+        $title = $spiderCore->user_input("请输入要搜索的内容（不填则随缘）:",RAND_KEYWORD[mt_rand(0,count(RAND_KEYWORD)-1)]);
+        $parm .= "&q=".$title;
+        $show_pro_first=$spiderCore->user_input("请输入True/False".PHP_EOL."Pro用户优先?（默认 true）:",true) ;
+        $show_pro_first==="false"?$parm .= "&show_pro_first=false":$parm .= "&show_pro_first=true";
+        $order=$spiderCore->user_input("最新还是喜欢?(默认 true 喜欢优先) :",true);
+        $order==="false" ? $parm .= "&order=recent":$parm .= "&order=likes_count";
+        $this->index_spider_core($spiderCore,$title,$parm);
     }
 }
 

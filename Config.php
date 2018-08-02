@@ -40,3 +40,7 @@ define("RAND_KEYWORD", array(
     'jk',
     'game',
 ));
+
+//artatstion执行一次循环，睡一会觉觉
+define("ARTSTATION_SLEEP","true");
+define("ARTSTATION_SLEEP_TIME","180");
