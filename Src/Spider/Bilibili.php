@@ -6,6 +6,7 @@
  * Time: 下午2:03
  */
 
+//https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=%E5%A4%A9%E4%BD%BF&page=2&callback=__jp0
 class Bilibili
 {
     public $userAgent = [
@@ -17,7 +18,7 @@ class Bilibili
         "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
     ];//设置用户user-agent
 
-    public $rank_type = [
+    public $rank_type = [ //排行榜
         1 => 'day',
         2 => 'month',
         'week',
@@ -28,17 +29,18 @@ class Bilibili
         '2' //摄影
     ];
 
-    public $get_date = [
+    public $get_date = [ //日期
         1 => '当前日期',
         2 => '自定义'
 
     ];
 
-    public $mode = [
-        1 => 'top50'
+    public $mode = [ //爬虫模式
+        1 => 'top50',
+        'search',
     ];
 
-    public $category = [
+    public $category = [ //类别
         1 => null,
         2 => 'cos',
         'sifu'
@@ -57,6 +59,11 @@ class Bilibili
             $spiderCore->eol($spiderCore->print_menu($string)) .
             "============================================" . PHP_EOL
         );
+    }
+
+    public function search($spiderCore)
+    {
+        $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘了):",RAND_KEYWORD[mt_rand(0,count(RAND_KEYWORD)-1)]); //获取查询内容
     }
 
     /**
