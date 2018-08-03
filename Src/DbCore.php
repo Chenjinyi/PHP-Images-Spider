@@ -8,5 +8,9 @@
 
 class DbCore
 {
+    public function data_file_log()
+    {
 
+    }
 }
+
