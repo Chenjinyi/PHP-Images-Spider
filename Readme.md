@@ -6,7 +6,7 @@
 
 ## 简介
 
-![Aug-09-2018-13-03-50.gif](https://sz.ali.ftc.red/ftc/2018/08/09/Aug-09-2018-13-03-50.gif)
+![bash](./bash.png)
 
 ​	本爬虫只是我用来下载好看的图片的 Rua
 
