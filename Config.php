@@ -42,10 +42,12 @@ define("RAND_KEYWORD", array(
     'jk',
     'game',
 ));
-
 //artatstion执行一次循环，睡一会觉觉（误）
 define("ARTSTATION_SLEEP","true");
-define("ARTSTATION_SLEEP_TIME","120");
+define("ARTSTATION_SLEEP_TIME","20");
+//bilibili执行一次循环， 就-1s
+define("BILIBILI_SLEEP","true");
+define("BILIBILI_SLEEP_TIME","10");
 
 
 
