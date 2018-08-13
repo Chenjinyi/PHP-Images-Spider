@@ -24,7 +24,10 @@ define("DATABASE_USERNAME", "root");
 define("DATABASE_PASSWORD", "");
 define("DATABASE_DATABASE", "images");
 
-define("DATE_FORMAT", "n-d");
+define("SPIDER_UNDATE_UPDATE", false);//创建当日图片文件夹更新&(改为年更)（逃）
+
+SPIDER_UNDATE_UPDATE ? define("DATE_FORMAT", "Y") : define("DATE_FORMAT", "n-d");//设置文件夹日期前缀
+
 //随机搜索关键词
 define("RAND_KEYWORD", array(
     'Coffee',
@@ -43,17 +46,16 @@ define("RAND_KEYWORD", array(
     'game',
 ));
 //artatstion执行一次循环，睡一会觉觉（误）
-define("ARTSTATION_SLEEP","true");
-define("ARTSTATION_SLEEP_TIME","20");
+define("ARTSTATION_SLEEP", "true");
+define("ARTSTATION_SLEEP_TIME", "20");
 //bilibili执行一次循环， 就-1s
-define("BILIBILI_SLEEP","true");
-define("BILIBILI_SLEEP_TIME","10");
-
+define("BILIBILI_SLEEP", "true");
+define("BILIBILI_SLEEP_TIME", "10");
 
 
 //数据库链接
-define("DB_MS",'mysql');//数据库类型
-define("DB_USERNAME","root");//数据库用户名
-define("DB_PASSWORD","");//数据库密码
-define("DB_ADDRESS","127.0.0.1");//数据库地址
-define("DB_NAME","images");//数据库民
+define("DB_MS", 'mysql');//数据库类型
+define("DB_USERNAME", "root");//数据库用户名
+define("DB_PASSWORD", "");//数据库密码
+define("DB_ADDRESS", "127.0.0.1");//数据库地址
+define("DB_NAME", "images");//数据库民
