@@ -25,8 +25,7 @@ $user_agent=array(
 ;
 
 //获取数据
-$spiderCore->init_dir();
-$key = $spiderCore->check_api_file('PixabayApiKey') ?: die("PixabayKey为空，请在/API文件夹里输入你的API KEY");//获取用户Key
+$key = $spiderCore->check_api_file('PixabayApiKey') ?: die("PixabayKey为空".PHP_EOL."请在/API文件夹里输入你的API KEY");//获取用户Key
 $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘了):",RAND_KEYWORD[mt_rand(0,count(RAND_KEYWORD)-1)]); //获取查询内容
 $per_page = $spiderCore->user_input($spiderCore->eol("每次最多尝试下载200张")."尝试爬取的图片数量（每页图片张数)".$spiderCore->eol("最终下载图片数量=(图片张数*多次执行的图片页数)")."请输一页的图片数量3~200（默认为30）:",30); //获取查询内容
 $page = $spiderCore->user_input(PHP_EOL."请输入获取的图片页数（默认为1）:",1); //获取查询内容
@@ -38,4 +37,4 @@ foreach ($result->hits as $images){
     $format=explode('.',$images->largeImageURL);
     array_push($images_arr,["pixabay-".$images->id.".".$format['2']=>$images->largeImageURL]);
 }
-$spiderCore->quick_down_img("pixabay-".$q,$images_arr);
+$spiderCore->quick_down_img("pixabay-".$q,$images_arr,"Pixabay");

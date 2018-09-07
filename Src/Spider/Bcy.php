@@ -20,4 +20,4 @@ class Bcy
     ];
 }
 
-die("未完成-还在写");
+//https://bcy.net/coser/index/ajaxloadtoppost?p=3&type=week&date=

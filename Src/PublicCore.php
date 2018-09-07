@@ -9,6 +9,11 @@
 
 class PublicCore
 {
+    public function __construct()
+    {
+        $this->init_dir();//初始化文件夹
+    }
+
     /**
      * CURL GET请求
      * @param $url string 请求URL
@@ -29,6 +34,29 @@ class PublicCore
         return $result;
     }
 
+    /**
+     * 写log
+     */
+    public function add_log($spider_name, $data, $filename_data = null)
+    {
+        if (SPIDER_LOG) {
+            $filename = $this->create_log($spider_name, $filename_data);
+            file_put_contents($filename, $data, FILE_APPEND);
+        }
+    }
+
+    /**
+     * 创建log文件夹
+     */
+    public function create_log($spider_name, $filename_data)
+    {
+        $dir_path = LOG_PATH . DIRECTORY_SEPARATOR . date(DATE_FORMAT) . "-" . $spider_name . "-";
+        empty($filename_data) ? $dir_path .= "log" : $dir_path .= $filename_data . "-" . "log";
+        if (!file_exists($dir_path)) {
+            touch($dir_path);
+        }
+        return $dir_path;
+    }
 
     /**
      * 文件夹名
@@ -47,16 +75,17 @@ class PublicCore
      * @param $file_url array array[文件名=下载链接]
      * @param $dir_name string 保存的文件夹
      */
-    public function image_save($file_url, $dir_name)
+    public function image_save($file_url, $dir_name, $spider_name, $filename_data = null)
     { //下载
         foreach ($file_url as $images) {
             foreach ($images as $key => $value) {
-                print_r($key.PHP_EOL);
+                print_r($key . PHP_EOL);
                 if (file_exists($dir_name . DIRECTORY_SEPARATOR . $key)) {//检测是否存在
                     echo "已存在" . PHP_EOL;
                     continue;
                 } else {
                     if ($image_save = file_get_contents($value)) {
+                        $this->add_log($spider_name, $key . "=>" . $value . PHP_EOL, $filename_data);
                         @file_put_contents($dir_name . DIRECTORY_SEPARATOR . $key, $image_save);
                     } else {
                         print_r("下载错误：" . $value);
@@ -87,21 +116,23 @@ class PublicCore
         print_r($string);
         $input = trim(fgets(STDIN));
         if (empty($input)) {
-            print_r($default.PHP_EOL);
+            print_r($default . PHP_EOL);
             return $default;
         }
-        print_r($input.PHP_EOL);
+        print_r($input . PHP_EOL);
         return $input;
 
     }
 
     /**
      * 初始化文件夹
+     * 定义文件夹存放文件夹
      */
     public function init_dir()
     {
         $this->dir_create(API_PATH);
         $this->dir_create(FILE_PATH);
+        $this->dir_create(LOG_PATH);
     }
 
     /**
@@ -166,15 +197,33 @@ class PublicCore
     /**
      * 通过URL进行图片格式处理（只能分辨jpg/png）
      */
-    public function image_url_format($image_url,$file_name){
+    public function image_url_format($image_url, $file_name)
+    {
         if (strstr($image_url, "jpg")) {
             $file_name .= ".jpg";
         } elseif (strstr($image_url, "png")) {
             $file_name .= ".png";
         } else {
-            $file_name .= $image_url.".jpeg";//不知道什么格式时的处理方式
+            $file_name .= $image_url . ".jpeg";//不知道什么格式时的处理方式
         }
         return $file_name;
+    }
+
+
+    /**
+     * 休息一下
+     * @param bool $status 是否休息
+     * @param string $min 休息时间
+     * @param int $max 休息时间
+     * @return string 返回休息时间
+     */
+    public function spider_wait($status = true, $min = SPIDERWAIT_TIME_MIN, $max = SPIDERWAIT_TIME_MAX)
+    {
+        if ($status) {
+            $num = mt_rand($min, $max);
+            echo PHP_EOL . "爬累了，我要睡觉觉zzzzzzzzzzzzzzz" . PHP_EOL . "让我先睡" . $num . "s";
+            sleep($num);
+        }
     }
 
     /**
@@ -182,10 +231,11 @@ class PublicCore
      * @param $string
      * @param $images_arr
      */
-    public function quick_down_img($string,$images_arr){
-        $dir_path =$this->new_dir_name($string);//生成保存路径
-        $this->image_save($images_arr,$dir_path);//下载图片
-        print_r("文件夹现在有:".$this->images_number($dir_path)."张图片");
+    public function quick_down_img($string, $images_arr, $spider_name, $filename_data = null)
+    {
+        $dir_path = $this->new_dir_name($string);//生成保存路径
+        $this->image_save($images_arr, $dir_path, $spider_name, $filename_data);//下载图片
+        print_r("文件夹现在有:" . $this->images_number($dir_path) . "张图片");
     }
 
     /**
@@ -193,9 +243,10 @@ class PublicCore
      * @param array $spider
      * @return string 菜单
      */
-    public function print_menu(array $spider){
-        $result="";
-        foreach ($spider as $key=>$value){
+    public function print_menu(array $spider)
+    {
+        $result = "";
+        foreach ($spider as $key => $value) {
             $result .= PHP_EOL . $key . " : " . $value . PHP_EOL;
         }
         return $result;

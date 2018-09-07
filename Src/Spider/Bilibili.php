@@ -50,7 +50,8 @@ class Bilibili
     /**
      * 掏空bilibili专用
      */
-    public function fuckBilibili($spiderCore){
+    public function fuckBilibili($spiderCore)
+    {
         //让用户输入参数
         $biz = $this->quick_input($spiderCore, $spiderCore->eol("1:画友，2:摄影") . "请输入要爬取的板块(默认为画友)：", $this->biz, "没有这个板块", '1');
         $rank_type = $this->quick_input($spiderCore, "请选择排行榜（默认为 2 月榜）：", $this->rank_type, "没有这种排行榜", '2');
@@ -66,23 +67,23 @@ class Bilibili
         } else {
             $spider_date = date('Y-m-d');
         }
-        while (true){
+        while (true) {
             $spider_date = $this->getYesterday($spider_date);
-            print_r("开始获取：".$spider_date.PHP_EOL);
+            print_r("开始获取：" . $spider_date . PHP_EOL);
             //封装请求链接
             @$parm = "biz=" . $biz . "&category=" . $this->category[$category] . "&rank_type=" . $this->rank_type[$rank_type] . "&date=" . $spider_date . "&page_num=0&page_size=50";
             $url = "http://api.vc.bilibili.com/link_draw/v2/Doc/ranklist?" . $parm;
-            print_r(PHP_EOL."爬取的参数为：".$parm.PHP_EOL);
+//            print_r(PHP_EOL . "爬取的参数为：" . $parm . PHP_EOL);
             //下载
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_images($result);
 
-            if (empty($images_arr)){
+            if (empty($images_arr)) {
                 break;
             }
-            @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr);
-            $this->bilibili_sleep();//休息一下
+            @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr, "bilibili");
+            $spiderCore->spider_wait(BILIBILI_SLEEP, BILIBILI_SLEEP_TIME_MIN, BILIBILI_SLEEP_TIME_MAX);
         }
     }
 
@@ -91,31 +92,19 @@ class Bilibili
      * @param string $date
      * @return string $yesterday
      */
-    public  function getYesterday($date)
+    public function getYesterday($date)
     {
-        if(empty($date))
-        {
-            $yesterday = date("Y-m-d",strtotime("-1 day"));
-        }else{
+        if (empty($date)) {
+            $yesterday = date("Y-m-d", strtotime("-1 day"));
+        } else {
             $arr = explode('-', $date);
             $year = $arr[0];
             $month = $arr[1];
             $day = $arr[2];
-            $unixtime = mktime(0,0,0,$month,$day,$year)-86400;
-            $yesterday = date('Y-m-d',$unixtime);
+            $unixtime = mktime(0, 0, 0, $month, $day, $year) - 86400;
+            $yesterday = date('Y-m-d', $unixtime);
         }
         return $yesterday;
-    }
-
-    /**
-     * config设置开启时，每执行一次循环休息一下
-     */
-    public function bilibili_sleep(){
-        if (BILIBILI_SLEEP){
-            print_r(PHP_EOL."爬累了，劳资累了劳资要睡觉zzzzzzzzz".PHP_EOL);
-            sleep(BILIBILI_SLEEP_TIME);
-            print_r(PHP_EOL."劳资刚刚-".BILIBILI_SLEEP_TIME."S了");
-        }
     }
 
 
@@ -136,8 +125,25 @@ class Bilibili
 
     public function search($spiderCore)
     {
-        $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘了                ):",RAND_KEYWORD[mt_rand(0,count(RAND_KEYWORD)-1)]); //获取查询内容
-        die('还在开发中');
+        $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘):", RAND_KEYWORD[mt_rand(0, count(RAND_KEYWORD) - 1)]); //获取查询内容
+        //https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=overwatch&page=1
+        $num = 1;
+        die("开发中");
+        while (true) {
+            $url = "https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=" . $q . "&page=" . $num;
+            $result = $spiderCore->curl_get($url, $this->userAgent);
+            $result = json_decode($result);
+
+            $images_arr=[];
+//            foreach ($result->result as $images){
+//                $title=$images->title;
+//                $
+//            }
+
+            @$spiderCore->quick_down_img("Bilibili" . "-" . $q, $images_arr, $images_arr, "bilibili", $q);
+            $spiderCore->spider_wait(BILIBILI_SLEEP, BILIBILI_SLEEP_TIME_MIN, BILIBILI_SLEEP_TIME_MAX);
+            $num++;
+        }
     }
 
     /**
@@ -212,7 +218,7 @@ class Bilibili
         $result = $spiderCore->curl_get($url, $this->userAgent);
         $result = json_decode($result);
         $images_arr = $this->get_images($result);
-        @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr);
+        @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr, $images_arr, "bilibili");
     }
 
 }

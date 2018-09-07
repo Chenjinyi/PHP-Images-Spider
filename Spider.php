@@ -40,7 +40,7 @@ $print = "
    \e[0m
 ====================================================
     \033[33m PHP Images Spider \033[0m" .
-        "\033[34m".$spiderCore->eol($spider)."\033[0m".
+    "\033[34m" . $spiderCore->eol($spider) . "\033[0m" .
     "
     \033[33m Chenjinyi:https://github.com/Chenjinyi \033[0m
 ====================================================
