@@ -38,7 +38,9 @@ class Bilibili
     public $mode = [ //爬虫模式
         1 => 'top50',
         'search',
+        'allImages',
         'fuckBilibili'
+
     ];
 
     public $category = [ //类别
@@ -46,6 +48,7 @@ class Bilibili
         2 => 'cos',
         'sifu'
     ];
+    //https://api.vc.bilibili.com/link_draw/v2/Photo/list?category=cos&type=hot&page_num=1&page_size=20
 
     /**
      * 掏空bilibili专用
@@ -85,6 +88,43 @@ class Bilibili
             @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr, "bilibili");
             $spiderCore->spider_wait(BILIBILI_SLEEP, BILIBILI_SLEEP_TIME_MIN, BILIBILI_SLEEP_TIME_MAX);
         }
+    }
+
+    /**
+     * 最热爬取
+     * @param $spiderCore
+     */
+    public function allImages($spiderCore)
+    {
+        $biz = [
+            1 => 'Doc',
+            'Photo'
+        ];
+        $mode = [
+            1 => 'hot',
+            'new'
+        ];
+
+        //获取用户选项
+        $biz = $biz[$this->quick_input($spiderCore, $spiderCore->eol("1:画友，2:摄影") . "请输入要爬取的板块(默认为画友)：", $this->biz, "没有这个板块", '1')];
+        $mode = $mode[$this->quick_input($spiderCore, "最热还是最新( 1:最热，2：最新 ) 默认\"最热\" ：", $mode, "参数非法,请输入 1 或 2", 1)];
+        $posts_num = $spiderCore->user_input("请输入爬取页数(1页=20个作品)(默认为：1):", 1);
+        $posts_num--; //bilibili第一页居然是0
+
+        for ($i = 0; $i <= $posts_num; $i++) {
+            $url = "https://api.vc.bilibili.com/link_draw/v2/" . $biz . "/list?category=all&type=" . $mode . "&page_num=" . $i . "&page_size=20";
+            $result = $spiderCore->curl_get($url, $this->userAgent);
+            $result = json_decode($result);
+            $images_arr = $this->get_images($result);
+
+            if (empty($images_arr)) {
+                break;
+            }
+            @$spiderCore->quick_down_img("Bilibili" . "-" . $biz, $images_arr, $mode);
+            $spiderCore->spider_wait(BILIBILI_SLEEP, BILIBILI_SLEEP_TIME_MIN, BILIBILI_SLEEP_TIME_MAX);
+        }
+
+
     }
 
     /**
@@ -128,13 +168,12 @@ class Bilibili
         $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘):", RAND_KEYWORD[mt_rand(0, count(RAND_KEYWORD) - 1)]); //获取查询内容
         //https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=overwatch&page=1
         $num = 1;
-        die("开发中");
         while (true) {
             $url = "https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=" . $q . "&page=" . $num;
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
 
-            $images_arr=[];
+            $images_arr = [];
 //            foreach ($result->result as $images){
 //                $title=$images->title;
 //                $

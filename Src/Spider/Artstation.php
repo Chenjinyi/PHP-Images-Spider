@@ -64,13 +64,13 @@ class Artstation
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
             $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr,"Artstation");
-            $this->artatstion_sleep();//休息一下
+            $spiderCore->spider_wait(ARTSTATION_SLEEP, ARTSTATION_SLEEP_TIME_MIN, ARTSTATION_SLEEP_TIME_MAX);
         }
 
     }
 
     /**
-     * 图片爬取下载
+     * 图片搜索爬取下载
      * @param $spiderCore
      * @param $spider_name
      * @param $parm
