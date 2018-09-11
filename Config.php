@@ -17,7 +17,7 @@ define("PIXABAY_API_URL", "https://pixabay.com/api/");
 
 
 
-define("DATE_FORMAT", "y");//日期格式
+define("DATE_FORMAT", "m-d");//日期格式
 //随机搜索关键词
 define("RAND_KEYWORD", array(
     'Coffee',

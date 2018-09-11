@@ -213,8 +213,8 @@ class PublicCore
     /**
      * 休息一下
      * @param bool $status 是否休息
-     * @param string $min 休息时间
-     * @param int $max 休息时间
+     * @param string $min 最小休息时间
+     * @param string $max 最大休息时间
      * @return string 返回休息时间
      */
     public function spider_wait($status = true, $min = SPIDERWAIT_TIME_MIN, $max = SPIDERWAIT_TIME_MAX)

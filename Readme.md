@@ -32,7 +32,9 @@ php spider.php
 
 ​	pixabay
 
-​	artstation
+​    artstation
+
+   Bing每日壁纸
 
 ~~半次元~~ 网站改版 无法爬取，新版本开发中
 

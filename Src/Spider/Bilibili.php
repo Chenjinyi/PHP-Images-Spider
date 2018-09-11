@@ -109,7 +109,7 @@ class Bilibili
         $biz = $biz[$this->quick_input($spiderCore, $spiderCore->eol("1:画友，2:摄影") . "请输入要爬取的板块(默认为画友)：", $this->biz, "没有这个板块", '1')];
         $mode = $mode[$this->quick_input($spiderCore, "最热还是最新( 1:最热，2：最新 ) 默认\"最热\" ：", $mode, "参数非法,请输入 1 或 2", 1)];
         $posts_num = $spiderCore->user_input("请输入爬取页数(1页=20个作品)(默认为：1):", 1);
-        $posts_num--; //bilibili第一页居然是0
+        $posts_num--; //bilibili第一页居然是0，其他页面又不一样
 
         for ($i = 0; $i <= $posts_num; $i++) {
             $url = "https://api.vc.bilibili.com/link_draw/v2/" . $biz . "/list?category=all&type=" . $mode . "&page_num=" . $i . "&page_size=20";
@@ -163,26 +163,69 @@ class Bilibili
         );
     }
 
+    /**
+     * Bilibili 搜索爬虫
+     * @param $spiderCore
+     * https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=925202 //内容详细
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=1
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=2 摄影
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=pubdate 最新
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=2 默认
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=stow&category_id=1 最多收藏
+     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=stow&category_id=0 全部
+     */
     public function search($spiderCore)
     {
+        $order = [
+            1 => 'totalrank', //默认排序
+            'pubdate', //最近更新
+            'stow' //最多收藏
+        ];
+
         $q = $spiderCore->user_input("请输入一个需要查询的字符串(不输入就随缘):", RAND_KEYWORD[mt_rand(0, count(RAND_KEYWORD) - 1)]); //获取查询内容
-        //https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=overwatch&page=1
-        $num = 1;
-        while (true) {
-            $url = "https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=" . $q . "&page=" . $num;
-            $result = $spiderCore->curl_get($url, $this->userAgent);
-            $result = json_decode($result);
+        $order = $order[$this->quick_input($spiderCore, "请选择排序方式（默认 1 ，最新 2 ，收藏 3）(默认：默认排序)：", $order, "参数非法，没有这种排序", 1)];
+        $category = $spiderCore->user_input('请选择爬取的区（1 全部 ，2 画友 3 摄影）（默认全部）', 1);
+        $category--;
+        $posts_num = $spiderCore->user_input("请输入爬取页数(1页=20个作品)(默认为：1):", 1);
 
-            $images_arr = [];
-//            foreach ($result->result as $images){
-//                $title=$images->title;
-//                $
-//            }
 
-            @$spiderCore->quick_down_img("Bilibili" . "-" . $q, $images_arr, $images_arr, "bilibili", $q);
+        for ($i = 1; $i <= $posts_num; $i++) {
+
+            $searchUrlurl = "https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1" .
+                "&keyword=" . $q .
+                "&order=" . $order .
+                "&category_id=" . $category .
+                "&page=" . $i;
+
+            $searchUrlData = $spiderCore->curl_get($searchUrlurl, $this->userAgent); //爬取
+            $searchUrlData = json_decode($searchUrlData);
+
+            $imagesIdArr = [];
+            foreach ($searchUrlData->data->result as $value) {
+                array_push($imagesIdArr, $value->id);//获取详细页ID
+            }
+
+            $imagesArr = [];
+
+            foreach ($imagesIdArr as $id) {
+                $pageUrl = "https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=" . $id;
+                $imagesPageData = $spiderCore->curl_get($pageUrl, $this->userAgent);
+                $imagesPageData = json_decode($imagesPageData);
+                $num = 1;
+                foreach ($imagesPageData->data->item->pictures as $value) {
+                    $src = $value->img_src;
+                    $format = explode('.', $src);
+                    $filename = $imagesPageData->data->item->title . "-" . $imagesPageData->data->user->name . "-" . $num . "." . $format['3'];
+                    $num++;
+                    array_push($imagesArr, [$filename => $src]);
+                }
+                unset($num);
+            }
+            @$spiderCore->quick_down_img("Bilibili" . "-" . $q, $imagesArr, "bilibili");
             $spiderCore->spider_wait(BILIBILI_SLEEP, BILIBILI_SLEEP_TIME_MIN, BILIBILI_SLEEP_TIME_MAX);
-            $num++;
+
         }
+
     }
 
     /**
@@ -244,7 +287,7 @@ class Bilibili
             $category = null;
         }
 
-        if ($get_date == 2) {
+        if ($get_date == 2) {//设置要获取的排行榜时间
             $get_date = $spiderCore->user_input("请输入自定义的时间（Y-m-d）：", date('Y-m-d'));
         } else {
             $get_date = date('Y-m-d');
@@ -257,7 +300,7 @@ class Bilibili
         $result = $spiderCore->curl_get($url, $this->userAgent);
         $result = json_decode($result);
         $images_arr = $this->get_images($result);
-        @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr, $images_arr, "bilibili");
+        @$spiderCore->quick_down_img("Bilibili" . "-" . $this->rank_type[$rank_type], $images_arr, "bilibili");
     }
 
 }
