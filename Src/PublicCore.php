@@ -251,4 +251,22 @@ class PublicCore
         }
         return $result;
     }
+
+    /**
+     * 原本Bilibili使用的菜单输出
+     * print_menu的二次封装
+     * @param $string
+     * @param $spiderName string
+     */
+    public function bMenu($string, $spiderName)
+    {
+        print_r( //输出用户选择的菜单
+            $this->splitLine. PHP_EOL . "
+    \033[33m $spiderName Spider \033[0m" . PHP_EOL .
+            $this->eol($this->print_menu($string)) .
+            $this->splitLine. PHP_EOL
+        );
+    }
+
+    public $splitLine="<<<<<<<<<<<<<<<<<<================================>>>>>>>>>>>>>>>>>>";
 }

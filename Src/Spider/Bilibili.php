@@ -18,6 +18,8 @@ class Bilibili
         "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
     ];//设置用户user-agent
 
+    public $spiderName= "Bilibili";
+
     public $rank_type = [ //排行榜
         1 => 'day',
         2 => 'month',
@@ -147,32 +149,9 @@ class Bilibili
         return $yesterday;
     }
 
-
-    /**
-     * 输出选择菜单
-     * @param $string
-     * @param $spiderCore
-     */
-    public function menu($string, $spiderCore)
-    {
-        print_r( //输出用户选择的菜单
-            "============================================" . PHP_EOL . "
-    \033[33m BIlibili Spider \033[0m" .
-            $spiderCore->eol($spiderCore->print_menu($string)) .
-            "============================================" . PHP_EOL
-        );
-    }
-
     /**
      * Bilibili 搜索爬虫
      * @param $spiderCore
-     * https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=925202 //内容详细
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=1
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=2 摄影
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=pubdate 最新
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=totalrank&category_id=2 默认
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=stow&category_id=1 最多收藏
-     * https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=photo&highlight=1&keyword=2b&order=stow&category_id=0 全部
      */
     public function search($spiderCore)
     {
@@ -238,7 +217,7 @@ class Bilibili
      */
     public function quick_input($spiderCore, $string, $array, $exit_string, $default)
     {
-        $this->menu($array, $spiderCore);
+        $spiderCore->bMenu($array,$this->spiderName);
         $input = $spiderCore->user_input($string, $default);
         if (@empty($array[$input])) {
             die($exit_string);
@@ -307,6 +286,6 @@ class Bilibili
 
 $bilibili = new Bilibili();
 
-$bilibili->menu($bilibili->mode, $spiderCore);
+$spiderCore->bMenu($bilibili->mode,$bilibili->spiderName);
 $mode = $spiderCore->user_input(PHP_EOL . "请选择你需要使用的模式：", null);
 @empty($user_mode = $bilibili->mode[$mode]) ? die(PHP_EOL . '没有这个爬虫模式') : $bilibili->$user_mode($spiderCore); //调用爬虫，并传入公用function

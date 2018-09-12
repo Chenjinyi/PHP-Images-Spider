@@ -63,7 +63,7 @@ class Artstation
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
-            $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr,"Artstation");
+            $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr, "Artstation");
             $spiderCore->spider_wait(ARTSTATION_SLEEP, ARTSTATION_SLEEP_TIME_MIN, ARTSTATION_SLEEP_TIME_MAX);
         }
 
@@ -83,7 +83,7 @@ class Artstation
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
-            $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr,"Artstation");
+            $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr, "Artstation");
             $spiderCore->spider_wait(ARTSTATION_SLEEP, ARTSTATION_SLEEP_TIME_MIN, ARTSTATION_SLEEP_TIME_MAX);
         }
 
@@ -100,7 +100,7 @@ class Artstation
         $result = json_decode($result);
 
         $images_arr = $this->get_img_url($result, $spiderCore);
-        $spiderCore->quick_down_img($this->spider_name . "-" . $user, $images_arr,"Artstation",$user);
+        $spiderCore->quick_down_img($this->spider_name . "-" . $user, $images_arr, "Artstation", $user);
     }
 
     public function latest($spiderCore) //最新图片
