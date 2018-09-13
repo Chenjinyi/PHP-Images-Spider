@@ -18,7 +18,7 @@ class Bilibili
         "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
     ];//设置用户user-agent
 
-    public $spiderName= "Bilibili";
+    public $spider_name = "Bilibili";
 
     public $rank_type = [ //排行榜
         1 => 'day',
@@ -46,11 +46,10 @@ class Bilibili
     ];
 
     public $category = [ //类别
-        1 => null,
+        1 => "all",
         2 => 'cos',
         'sifu'
     ];
-    //https://api.vc.bilibili.com/link_draw/v2/Photo/list?category=cos&type=hot&page_num=1&page_size=20
 
     /**
      * 掏空bilibili专用
@@ -72,13 +71,13 @@ class Bilibili
         } else {
             $spider_date = date('Y-m-d');
         }
-        while (true) {
+        while (true) { //无限循环，直到报错停止
             $spider_date = $this->getYesterday($spider_date);
             print_r("开始获取：" . $spider_date . PHP_EOL);
             //封装请求链接
             @$parm = "biz=" . $biz . "&category=" . $this->category[$category] . "&rank_type=" . $this->rank_type[$rank_type] . "&date=" . $spider_date . "&page_num=0&page_size=50";
             $url = "http://api.vc.bilibili.com/link_draw/v2/Doc/ranklist?" . $parm;
-//            print_r(PHP_EOL . "爬取的参数为：" . $parm . PHP_EOL);
+//            print_r(PHP_EOL . "爬取的URL为：" . $parm . PHP_EOL);
             //下载
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
@@ -113,8 +112,18 @@ class Bilibili
         $posts_num = $spiderCore->user_input("请输入爬取页数(1页=20个作品)(默认为：1):", 1);
         $posts_num--; //bilibili第一页居然是0，其他页面又不一样
 
+        if ($biz == 'Photo') {
+            $category = $this->category[$this->quick_input($spiderCore, "请选择板块（默认为 2 Cos ）：", $this->category, "没有这种板块", '2')];
+            !empty($category) ?: $category = "all";
+        } else {
+            $category = "all";
+        }
+
         for ($i = 0; $i <= $posts_num; $i++) {
-            $url = "https://api.vc.bilibili.com/link_draw/v2/" . $biz . "/list?category=all&type=" . $mode . "&page_num=" . $i . "&page_size=20";
+            $url = "https://api.vc.bilibili.com/link_draw/v2/" . $biz . "/list?category=" . $category .
+                "&type=" . $mode .
+                "&page_num=" . $i .
+                "&page_size=20";
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_images($result);
@@ -217,7 +226,7 @@ class Bilibili
      */
     public function quick_input($spiderCore, $string, $array, $exit_string, $default)
     {
-        $spiderCore->bMenu($array,$this->spiderName);
+        $spiderCore->bMenu($array, $this->spider_name);
         $input = $spiderCore->user_input($string, $default);
         if (@empty($array[$input])) {
             die($exit_string);
@@ -286,6 +295,6 @@ class Bilibili
 
 $bilibili = new Bilibili();
 
-$spiderCore->bMenu($bilibili->mode,$bilibili->spiderName);
+$spiderCore->bMenu($bilibili->mode, $bilibili->spider_name);
 $mode = $spiderCore->user_input(PHP_EOL . "请选择你需要使用的模式：", null);
 @empty($user_mode = $bilibili->mode[$mode]) ? die(PHP_EOL . '没有这个爬虫模式') : $bilibili->$user_mode($spiderCore); //调用爬虫，并传入公用function

@@ -7,6 +7,7 @@
  */
 
 date_default_timezone_set('PRC'); //设置时区
+
 //定义目录名
 define("API_PATH", "Api"); //存放API Key文件夹
 define("FILE_PATH", "Resource"); //存放文件文件夹名
@@ -14,8 +15,6 @@ define("LOG_PATH", 'Log');//log文件夹存储名
 
 //网站API链接
 define("PIXABAY_API_URL", "https://pixabay.com/api/");
-
-
 
 define("DATE_FORMAT", "m-d");//日期格式
 //随机搜索关键词
@@ -35,18 +34,18 @@ define("RAND_KEYWORD", array(
     'jk',
     'game',
 ));
+
 //通用等待设置
 define("SPIDERWAIT_TIME_MIN", "1");//最早等待
 define('SPIDERWAIT_TIME_MAX', "10");//最大等待
 //artatstion执行一次循环，睡一会觉觉（误）
 define("ARTSTATION_SLEEP", "true");
-define("ARTSTATION_SLEEP_TIME_MIN", "20");//最小等待
-define("ARTSTATION_SLEEP_TIME_MAX", "10");//最大等待
+define("ARTSTATION_SLEEP_TIME_MIN", "10");//最小等待
+define("ARTSTATION_SLEEP_TIME_MAX", "20");//最大等待
 //bilibili执行一次循环， 就-1s
 define("BILIBILI_SLEEP", "true");
 define("BILIBILI_SLEEP_TIME_MIN", "10");//最小等待
 define("BILIBILI_SLEEP_TIME_MAX", "40");//最大等待
-
 
 //数据库链接
 define("SAVE_IMAGES_URL_DATABASE", "false");//是否记录图片链接到数据库

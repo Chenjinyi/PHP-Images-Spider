@@ -133,11 +133,6 @@ class Artstation
 }
 
 $artstation = new Artstation();
-print_r( //输出用户选择的菜单
-    "=====================================
-    \033[33m Artstation Spider \033[0m" .
-    $spiderCore->eol($spiderCore->print_menu($artstation->mode)) .
-    "============================================"
-);
+$spiderCore->bMenu($artstation->mode, $artstation->spider_name);
 $mode = $spiderCore->user_input(PHP_EOL . "请选择你需要使用的模式：", null);
 @empty($user_mode = $artstation->mode[$mode]) ? die(PHP_EOL . '没有这个爬虫模式') : $artstation->$user_mode($spiderCore); //调用爬虫，并传入公用function

@@ -36,6 +36,9 @@ class PublicCore
 
     /**
      * 写log
+     * @param $spider_name string 爬虫名称
+     * @param $data string 内容
+     * @param null $filename_data 文件名附加字符串
      */
     public function add_log($spider_name, $data, $filename_data = null)
     {
@@ -46,7 +49,9 @@ class PublicCore
     }
 
     /**
-     * 创建log文件夹
+     * @param $spider_name string 爬虫名称
+     * @param $filename_data string 内容
+     * @return string 文件路径
      */
     public function create_log($spider_name, $filename_data)
     {
@@ -60,8 +65,8 @@ class PublicCore
 
     /**
      * 文件夹名
-     * @param $string
-     * @return string
+     * @param string 名称
+     * @return string 路径
      */
     public function new_dir_name($string)
     {
@@ -108,10 +113,11 @@ class PublicCore
 
     /**
      * 获取提示并用户输入
-     * @param $string
-     * @return string
+     * @param $string string 提示
+     * @param $default 1|string 用户未输入时的默认职
+     * @return string 用户输入内容
      */
-    public function user_input($string, $default)
+    public function user_input($string, $default = 1)
     {
         print_r($string);
         $input = trim(fgets(STDIN));
