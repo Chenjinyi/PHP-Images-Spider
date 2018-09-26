@@ -89,8 +89,8 @@ class PublicCore
                     echo "已存在" . PHP_EOL;
                     continue;
                 } else {
-                    if ($image_save = file_get_contents($value)) {
-                        $this->add_log($spider_name, $key . "=>" . $value . PHP_EOL, $filename_data);
+                    if (@$image_save = file_get_contents($value)) {
+                        @$this->add_log($spider_name, $key . "=>" . $value . PHP_EOL, $filename_data);
                         @file_put_contents($dir_name . DIRECTORY_SEPARATOR . $key, $image_save);
                     } else {
                         print_r("下载错误：" . $value);
@@ -239,9 +239,57 @@ class PublicCore
      */
     public function quick_down_img($string, $images_arr, $spider_name, $filename_data = null)
     {
+        if (CURL_DOWN_OPT) { //选择下载模式
+            $this->curl_multi_down_images($string, $images_arr, $spider_name, $filename_data);
+        } else {
+            $dir_path = $this->new_dir_name($string);//生成保存路径
+            $this->image_save($images_arr, $dir_path, $spider_name, $filename_data);//下载图片
+            print_r("文件夹现在有:" . $this->images_number($dir_path) . "张图片");
+        }
+    }
+
+    /**
+     * CURL多线程下载　
+     */
+    public function curl_multi_down_images($string, $images_arr, $spider_name, $filename_data = null)
+    {
         $dir_path = $this->new_dir_name($string);//生成保存路径
-        $this->image_save($images_arr, $dir_path, $spider_name, $filename_data);//下载图片
-        print_r("文件夹现在有:" . $this->images_number($dir_path) . "张图片");
+        for ($c = 1; $c <= count($images_arr); $c += CURL_DOWN_NUM) {//开始循环
+
+            $mh = curl_multi_init();//初始化　
+            $arr = array_slice($images_arr, $c - 1, CURL_DOWN_NUM);
+            $conn = [];
+
+            foreach ($arr as $title => $url) {
+                if (file_exists($dir_path . DIRECTORY_SEPARATOR . $title)) {//检测是否存在
+                    echo "已存在" . PHP_EOL;
+                    continue;
+                }
+                $conn[$title] = curl_init();
+                curl_setopt($conn[$title], CURLOPT_URL, $url);
+                curl_setopt($conn[$title], CURLOPT_RETURNTRANSFER, 1);
+                curl_multi_add_handle($mh, $conn[$title]);
+            }
+            // 执行批处理句柄
+            $active = null;
+            do {
+                curl_multi_exec($mh, $active); //执行批处理句柄
+            } while ($active > 0); //4
+
+            foreach ($conn as $title => $url) {
+                $res[$title] = curl_multi_getcontent($conn[$title]);
+                curl_close($conn['title']);
+                curl_multi_remove_handle($mh, $conn[$title]);//释放资源
+            }
+
+            curl_multi_close($mh);//释放资源
+
+            foreach ($res as $title => $item) {//存储图片
+                file_put_contents($dir_path . DIRECTORY_SEPARATOR . $title, $item);
+                $this->add_log($spider_name, $title . PHP_EOL, $filename_data);
+            }
+            print_r("文件夹现在有:" . $this->images_number($dir_path) . "张图片" . PHP_EOL);
+        }
     }
 
     /**
@@ -267,12 +315,12 @@ class PublicCore
     public function bMenu($string, $spiderName)
     {
         print_r( //输出用户选择的菜单
-            $this->splitLine. PHP_EOL . "
+            $this->splitLine . PHP_EOL . "
     \033[33m $spiderName Spider \033[0m" . PHP_EOL .
             $this->eol($this->print_menu($string)) .
-            $this->splitLine. PHP_EOL
+            $this->splitLine . PHP_EOL
         );
     }
 
-    public $splitLine="<<<<<<<<<<<<<<<<<<================================>>>>>>>>>>>>>>>>>>";
+    public $splitLine = "<<<<<<<<<<<<<<<<<<================================>>>>>>>>>>>>>>>>>>";
 }

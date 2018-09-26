@@ -6,3 +6,4 @@ Resource/*
 .DS_Store
 .idea/
 Log/
+Src/Spider/Test.php

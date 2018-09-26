@@ -55,4 +55,7 @@ define("DB_PASSWORD", "");//数据库密码
 define("DB_ADDRESS", "127.0.0.1");//数据库地址
 define("DB_NAME", "images");//数据库名称
 
-define("SPIDER_LOG", 'true');//是否使用爬取记录
+define("SPIDER_LOG", true);//是否使用爬取记录
+
+define('CURL_DOWN_OPT',false);//是否启用多线程下载
+define("CURL_DOWN_NUM",8);//最多多少个同时下载
