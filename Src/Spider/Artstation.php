@@ -38,8 +38,11 @@ class Artstation
     {
         $images_arr = [];
         foreach ($result->data as $value) {
-            $images_url = $value->cover->medium_image_url;
-            $images_url = str_replace("medium", "large", $images_url);//生成更高清的图片下载地址
+            $images_url = $value->cover->thumb_url;
+//            $images_url = str_replace("medium", "large", $images_url);//生成更高清的图片下载地址
+//            $images_url=str_replace('smaller_square','large',$images_url);
+//            preg_replace("/201.[0-9]{3,}/",'',$images_url);
+            $rep = substr_replace($images_url,'large',63,29);
             $file_name = $value->title . "-" . $value->cover_asset_id;//生成图片名
             $file_name = $spiderCore->image_url_format($images_url, $file_name);
             array_push($images_arr, [$file_name => $images_url]);
@@ -63,6 +66,7 @@ class Artstation
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
+
             $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr, "Artstation");
             $spiderCore->spider_wait(ARTSTATION_SLEEP, ARTSTATION_SLEEP_TIME_MIN, ARTSTATION_SLEEP_TIME_MAX);
         }
@@ -75,6 +79,7 @@ class Artstation
      * @param $spider_name
      * @param $parm
      */
+    //https://www.artstation.com/projects.json?page=2&sorting=trending
     public function search_core($spiderCore, $spider_name, $parm)
     {
         $posts_num = $spiderCore->user_input("请输入爬取页数(1页=50个作品)(默认为：1):", 1);
