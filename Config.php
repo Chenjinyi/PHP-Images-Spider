@@ -39,13 +39,13 @@ define("RAND_KEYWORD", array(
 define("SPIDERWAIT_TIME_MIN", "1");//最早等待
 define('SPIDERWAIT_TIME_MAX', "10");//最大等待
 //artatstion执行一次循环，睡一会觉觉（误）
-define("ARTSTATION_SLEEP", "true");
-define("ARTSTATION_SLEEP_TIME_MIN", "10");//最小等待
-define("ARTSTATION_SLEEP_TIME_MAX", "20");//最大等待
+define("ARTSTATION_SLEEP", false);
+define("ARTSTATION_SLEEP_TIME_MIN", "1");//最小等待
+define("ARTSTATION_SLEEP_TIME_MAX", "10");//最大等待
 //bilibili执行一次循环， 就-1s
-define("BILIBILI_SLEEP", "true");
-define("BILIBILI_SLEEP_TIME_MIN", "10");//最小等待
-define("BILIBILI_SLEEP_TIME_MAX", "40");//最大等待
+define("BILIBILI_SLEEP", false);
+define("BILIBILI_SLEEP_TIME_MIN", "1");//最小等待
+define("BILIBILI_SLEEP_TIME_MAX", "10");//最大等待
 
 //数据库链接
 define("SAVE_IMAGES_URL_DATABASE", "false");//是否记录图片链接到数据库
@@ -57,5 +57,5 @@ define("DB_NAME", "images");//数据库名称
 
 define("SPIDER_LOG", true);//是否使用爬取记录
 
-define('CURL_DOWN_OPT',false);//是否启用多线程下载
-define("CURL_DOWN_NUM",8);//最多多少个同时下载
+define('CURL_DOWN_OPT', false);//是否启用多线程下载
+define("CURL_DOWN_NUM", 8);//最多多少个同时下载

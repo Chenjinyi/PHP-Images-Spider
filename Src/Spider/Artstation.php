@@ -42,7 +42,7 @@ class Artstation
 //            $images_url = str_replace("medium", "large", $images_url);//生成更高清的图片下载地址
 //            $images_url=str_replace('smaller_square','large',$images_url);
 //            preg_replace("/201.[0-9]{3,}/",'',$images_url);
-            $rep = substr_replace($images_url,'large',63,29);
+            $images_url = substr_replace($images_url,'large',63,29);
             $file_name = $value->title . "-" . $value->cover_asset_id;//生成图片名
             $file_name = $spiderCore->image_url_format($images_url, $file_name);
             array_push($images_arr, [$file_name => $images_url]);
@@ -62,12 +62,14 @@ class Artstation
     {
         $posts_num = $spiderCore->user_input("请输入爬取页数(1页=50个作品)(默认为：1):", 1);
         for ($start_num = 1; $start_num <= $posts_num; $start_num++) {
-            $url = "https://www.artstation.com/projects.json?page=" . $start_num . $parm;
+            $url = "https://www.artstation.com/projects.json?medium=digital2d&page=" . $start_num . $parm;
             $result = $spiderCore->curl_get($url, $this->userAgent);
             $result = json_decode($result);
             $images_arr = $this->get_img_url($result, $spiderCore);
-
+//            var_dump($images_arr);
+//            die();
             $spiderCore->quick_down_img($this->spider_name . "-" . $spider_name, $images_arr, "Artstation");
+//            $spiderCore->curl_multi_down_images($spider_name, $images_arr, "Artstation");
             $spiderCore->spider_wait(ARTSTATION_SLEEP, ARTSTATION_SLEEP_TIME_MIN, ARTSTATION_SLEEP_TIME_MAX);
         }
 
